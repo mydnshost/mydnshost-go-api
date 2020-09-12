@@ -1,4 +1,5 @@
-package go_mydnshost
+// Package mydnshost_go_api provides an API client for MyDNSHost.
+package mydnshost_go_api
 
 import (
 	"bytes"
@@ -76,6 +77,28 @@ func (c *Client) UserData(ctx context.Context) (*UserDataResponse, error) {
 
 	response := &UserDataResponse{}
 	return response, json.Unmarshal(*res.Response, response)
+}
+
+// AccessLevel describes a level of access to a domain.
+type AccessLevel string
+
+const (
+	LevelOwner AccessLevel = "owner"
+	LevelAdmin AccessLevel = "admin"
+	LevelWrite AccessLevel = "write"
+	LevelRead AccessLevel = "read"
+	LevelNone AccessLevel = "none"
+)
+
+// Domains lists all domains accessible by the current user, and gives the access level to each.
+func (c *Client) Domains(ctx context.Context) (map[string]AccessLevel, error) {
+	res, err := c.request(ctx, http.MethodGet, "domains", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make(map[string]AccessLevel)
+	return response, json.Unmarshal(*res.Response, &response)
 }
 
 // Record contains the basic details of a DNS record.

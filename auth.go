@@ -1,4 +1,4 @@
-package go_mydnshost
+package mydnshost_go_api
 
 import "net/http"
 
