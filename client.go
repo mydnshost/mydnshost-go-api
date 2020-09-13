@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -86,8 +87,8 @@ const (
 	LevelOwner AccessLevel = "owner"
 	LevelAdmin AccessLevel = "admin"
 	LevelWrite AccessLevel = "write"
-	LevelRead AccessLevel = "read"
-	LevelNone AccessLevel = "none"
+	LevelRead  AccessLevel = "read"
+	LevelNone  AccessLevel = "none"
 )
 
 // Domains lists all domains accessible by the current user, and gives the access level to each.
@@ -209,6 +210,51 @@ func (c *Client) ModifyRecords(ctx context.Context, domain string, operations ..
 	}
 
 	response := &ModifyRecordsResponse{}
+	return response, json.Unmarshal(*res.Response, response)
+}
+
+// FindRecordsResponse lists all records for a domain that match provided search terms.
+type FindRecordsResponse struct {
+	Records []ExistingRecord `json:"records"`
+}
+
+// NamedRecords finds records with the given name under the specified domain.
+// recordType may be left blank to match all record types.
+func (c *Client) NamedRecords(ctx context.Context, domain, recordName, recordType string) (*FindRecordsResponse, error) {
+	res, err := c.request(
+		ctx,
+		http.MethodGet,
+		strings.TrimSuffix(fmt.Sprintf("domains/%s/record/%s/%s", domain, recordName, recordType), "/"),
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &FindRecordsResponse{}
+	return response, json.Unmarshal(*res.Response, response)
+}
+
+// DeletedNamedRecordsResponse describes the result of deleting named records
+type DeletedNamedRecordsResponse struct {
+	Deleted int    `json:"deleted"`
+	Serial  uint64 `json:"serial"`
+}
+
+// DeleteNamedRecords deletes records with the given name under the specified domain.
+// recordType may be left blank to match all record types.
+func (c *Client) DeleteNamedRecords(ctx context.Context, domain, recordName, recordType string) (*DeletedNamedRecordsResponse, error) {
+	res, err := c.request(
+		ctx,
+		http.MethodDelete,
+		strings.TrimSuffix(fmt.Sprintf("domains/%s/record/%s/%s", domain, recordName, recordType), "/"),
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeletedNamedRecordsResponse{}
 	return response, json.Unmarshal(*res.Response, response)
 }
 
