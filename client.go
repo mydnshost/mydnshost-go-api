@@ -104,12 +104,13 @@ func (c *Client) Domains(ctx context.Context) (map[string]AccessLevel, error) {
 
 // Record contains the basic details of a DNS record.
 type Record struct {
-	Name     string `json:"name,omitempty"`
-	Type     string `json:"type,omitempty"`
-	Content  string `json:"content,omitempty"`
-	TTL      int    `json:"ttl,omitempty"`
-	Priority *int   `json:"priority,omitempty"`
-	Disabled *bool  `json:"disabled,omitempty"`
+	Name     string  `json:"name,omitempty"`
+	Type     string  `json:"type,omitempty"`
+	Content  string  `json:"content,omitempty"`
+	TTL      int     `json:"ttl,omitempty"`
+	Priority *int    `json:"priority,omitempty"`
+	Disabled *bool   `json:"disabled,omitempty"`
+	Comment  *string `json:"comment,omitempty"`
 }
 
 // ExistingRecord is a Record that has been stored by MyDNSHost and thus has an ID and change history.
